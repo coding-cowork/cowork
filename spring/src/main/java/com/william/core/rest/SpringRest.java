@@ -1,9 +1,17 @@
 package com.william.core.rest;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,12 +24,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.HttpServletBean;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.william.core.component.MongoConnection;
+import com.william.core.component.ReportComponent;
+import com.william.core.component.ReportPath;
 import com.william.core.model.Material;
 
 @Controller
@@ -32,6 +43,9 @@ public class SpringRest {
 
 	@Autowired
 	private MongoConnection mongo;
+
+	@Autowired
+	private ReportComponent report;
 
 	public SpringRest() {
 		super();
@@ -151,6 +165,45 @@ public class SpringRest {
 		}
 	}
 
+	/**
+	 * 
+	 * produce report for material
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/report/material", method = RequestMethod.GET, produces = "application/jdf")
+	@ResponseBody
+	public ResponseEntity<Object> produceMaterialReport(HttpServletResponse res) {
+		ResponseEntity<Object> response = null;
+		DBCursor cursor = null;
+		try {
+			DBCollection find = mongo.getDB().getCollection("material");
+			List<DBObject> objList = new ArrayList<DBObject>();
+			cursor = find.find();
+			while (cursor.hasNext()) {
+				DBObject obj = cursor.next();
+				objList.add(setReportValue(obj));
+			}
+			File file = report.produceReport(ReportPath.material, objList);
+			res.setContentType("application/pdf");
+			res.setHeader("Content-Disposition",
+					"attachment;filename=" + file.getName());
+			FileInputStream input = new FileInputStream(file);
+			IOUtils.copy(input,res.getOutputStream());
+			res.flushBuffer();
+		    input.close();
+			response = new ResponseEntity<Object>(file, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			response = new ResponseEntity<Object>("Search failure~~",
+					HttpStatus.EXPECTATION_FAILED);
+		} finally {
+			cursor.close();
+		    return response;
+		}
+	}
+
 	private DBObject setValue(Material material, DBObject obj) {
 
 		if (!StringUtils.isBlank(material.get_id())) {
@@ -185,4 +238,41 @@ public class SpringRest {
 
 		return obj;
 	}
+
+	private DBObject setReportValue(DBObject obj) {
+
+		if (StringUtils.isBlank((String) obj.get("_id"))) {
+			obj.put("_id", "");
+		}
+		if (StringUtils.isBlank((String) obj.get("materialName"))) {
+			obj.put("materialName", "");
+		}
+
+		if (StringUtils.isBlank((String) obj.get("materialLocation"))) {
+			obj.put("materialLocation", "");
+		}
+
+		if (StringUtils.isBlank((String) obj.get("region"))) {
+			obj.put("region", "");
+		}
+
+		if (StringUtils.isBlank((String) obj.get("unit"))) {
+			obj.put("unit", "");
+		}
+		if (obj.get("amount") == null) {
+			obj.put("amount", 0.0);
+		}
+		if (obj.get("dailyAmount") == null) {
+			obj.put("dailyAmount", 0);
+		}
+		if (obj.get("accumulatedAmount") == null) {
+			obj.put("accumulatedAmount", 0.0);
+		}
+		if (StringUtils.isBlank((String) obj.get("comment"))) {
+			obj.put("comment", "");
+		}
+
+		return obj;
+	}
+
 }

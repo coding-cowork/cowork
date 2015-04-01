@@ -24,7 +24,7 @@ public class MongoConnection {
 
 	private MongoConnection() {
 
-		this.host = "192.168.0.14";
+		this.host = "192.168.0.13";
 		this.port = 27017;
 		this.dbName = "test";
 		this.userName = "william";

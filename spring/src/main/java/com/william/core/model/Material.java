@@ -1,5 +1,6 @@
 package com.william.core.model;
 
+import java.util.List;
 
 public class Material {
 
@@ -18,11 +19,11 @@ public class Material {
 
 	private String unit;
 
-	private int amount;
+	private double amount;
 
 	private int dailyAmount;
 
-	private int accumulatedAmount;
+	private double accumulatedAmount;
 
 	private String comment;
 
@@ -66,12 +67,20 @@ public class Material {
 		this.unit = unit;
 	}
 
-	public int getAmount() {
+	public double getAmount() {
 		return amount;
 	}
 
-	public void setAmount(int amount) {
+	public void setAmount(double amount) {
 		this.amount = amount;
+	}
+
+	public double getAccumulatedAmount() {
+		return accumulatedAmount;
+	}
+
+	public void setAccumulatedAmount(double accumulatedAmount) {
+		this.accumulatedAmount = accumulatedAmount;
 	}
 
 	public int getDailyAmount() {
@@ -80,14 +89,6 @@ public class Material {
 
 	public void setDailyAmount(int dailyAmount) {
 		this.dailyAmount = dailyAmount;
-	}
-
-	public int getAccumulatedAmount() {
-		return accumulatedAmount;
-	}
-
-	public void setAccumulatedAmount(int accumulatedAmount) {
-		this.accumulatedAmount = accumulatedAmount;
 	}
 
 	public String getComment() {
