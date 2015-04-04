@@ -1,6 +1,7 @@
 package com.william.core.component;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 
@@ -38,11 +40,10 @@ public class ReportComponent {
 		JasperPrint jasperPrint = null;
 		File file = null;
 		try {
-			String filePath = getClass().getClassLoader()
-					.getResource(path.material.getPath()).getFile();
-
-			String compileFile = JasperCompileManager
-					.compileReportToFile(filePath);
+			InputStream filePath = this.getClass().getClassLoader()
+					.getResourceAsStream(path.getPath());
+			JasperReport compileFile = JasperCompileManager
+					.compileReport(filePath);
 			jasperPrint = JasperFillManager.fillReport(compileFile,
 					new HashMap(), new JRBeanCollectionDataSource(dataList));
 
@@ -50,8 +51,7 @@ public class ReportComponent {
 
 			exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 
-			String finalData = compileFile.substring(0,
-					compileFile.length() - 7) + ".pdf";
+			String finalData = "report.pdf";
 			file = new File(finalData);
 			exporter.setParameter(JRExporterParameter.OUTPUT_FILE, file);
 
