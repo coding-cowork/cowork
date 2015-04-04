@@ -59,8 +59,9 @@ public class ReportComponent {
 
 		} catch (JRException ex) {
 			ex.printStackTrace();
-		} finally {
-			return file;
 		}
+		// finally {
+		return file;
+		// }
 	}
 }
