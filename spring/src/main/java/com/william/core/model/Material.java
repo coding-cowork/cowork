@@ -1,6 +1,5 @@
 package com.william.core.model;
 
-import java.util.List;
 
 public class Material {
 
