@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.william.core.model.Record;
 import com.william.core.service.RecordService;
+import com.william.core.service.WeatherService;
 
 /**
  * 
@@ -36,6 +38,9 @@ public class RecordRest {
 	@Autowired
 	private RecordService recordService;
 
+	@Autowired
+	private WeatherService weatherService;
+
 	/**
 	 * 
 	 * create for record
@@ -44,41 +49,31 @@ public class RecordRest {
 	 * @return
 	 */
 	@SuppressWarnings("finally")
-	@RequestMapping(value = "/create", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<Object> createRecord(
-			@RequestParam("type") @DefaultValue(value = "") String type,
-			@RequestParam("company") @DefaultValue(value = "") String company,
-			@RequestParam("item") @DefaultValue(value = "") String item,
-			@RequestParam("subItem") @DefaultValue(value = "") String subItem,
-			@RequestParam("amount") @DefaultValue(value = "0.00") double amount,
-			@RequestParam("personType") @DefaultValue(value = "") String personType,
-			@RequestParam("amAmount") @DefaultValue(value = "0") int amAmount,
-			@RequestParam("pmAmount") @DefaultValue(value = "0") int pmAmount,
-			@RequestParam("middleAmount") @DefaultValue(value = "0") int middleAmount,
-			@RequestParam("position") @DefaultValue(value = "") String position,
-			@RequestParam("surface") @DefaultValue(value = "") String surface,
-			@RequestParam("volume") @DefaultValue(value = "") String volume,
-			@RequestParam("area") @DefaultValue(value = "") String area) {
+			@RequestBody final MultiValueMap<String, String> form) {
 		ResponseEntity<Object> response = null;
 		try {
 			Record record = new Record();
-			record.setAmAmount(amAmount);
-			record.setAmount(amount);
-			record.setArea(area);
-			record.setCompany(company);
-			record.setItem(item);
-			record.setSubItem(subItem);
-			record.setMiddleAmount(middleAmount);
-			record.setPersonType(personType);
-			record.setPosition(position);
-			record.setPmAmount(pmAmount);
-			record.setSurface(surface);
-			record.setType(type);
-			record.setVolume(volume);
+			record.setAmAmount(Integer.parseInt(form.getFirst("amAmount")));
+			record.setAmount(Double.parseDouble(form.getFirst("amount")));
+			record.setArea(form.getFirst("area"));
+			record.setCompany(form.getFirst("company"));
+			record.setItem(form.getFirst("item"));
+			record.setSubItem(form.getFirst("subItem"));
+			record.setMiddleAmount(Integer.parseInt(form
+					.getFirst("middleAmount")));
+			record.setPersonType(form.getFirst("personType"));
+			record.setPosition(form.getFirst("position"));
+			record.setPmAmount(Integer.parseInt(form.getFirst("pmAmount")));
+			record.setSurface(form.getFirst("surface"));
+			record.setType(form.getFirst("type"));
+			record.setVolume(form.getFirst("volume"));
 			record.setCreateDate(new Date());
 			record.setCreateId("101");
 			record.setCreateUser("XXXXX");
+			record.setLevel(1);
 			recordService.createRecord(record);
 			response = new ResponseEntity<Object>("Create success~~",
 					HttpStatus.OK);
@@ -132,46 +127,60 @@ public class RecordRest {
 
 	/**
 	 * 
+	 * search for record
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@SuppressWarnings("finally")
+	@RequestMapping(value = "/find/today/all", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<Object> searchTotalAllRecord() {
+		List<Record> resultList = null;
+		ResponseEntity<Object> response = null;
+		try {
+			resultList = recordService.readTodayAllRecord();
+			response = new ResponseEntity<Object>(resultList, HttpStatus.OK);
+		} catch (Exception e) {
+			log.error("search error", e);
+			response = new ResponseEntity<Object>("search failure~~",
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		} finally {
+			return response;
+		}
+
+	}
+
+	/**
+	 * 
 	 * update for record
 	 * 
 	 * @param id
 	 * @return
 	 */
 	@SuppressWarnings("finally")
-	@RequestMapping(value = "/update", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<Object> updateRecord(
-			@RequestParam("id") @DefaultValue(value = "") String id,
-			@RequestParam("type") @DefaultValue(value = "") String type,
-			@RequestParam("company") @DefaultValue(value = "") String company,
-			@RequestParam("item") @DefaultValue(value = "") String item,
-			@RequestParam("subItem") @DefaultValue(value = "") String subItem,
-			@RequestParam("amount") @DefaultValue(value = "0.00") double amount,
-			@RequestParam("personType") @DefaultValue(value = "") String personType,
-			@RequestParam("amAmount") @DefaultValue(value = "0") int amAmount,
-			@RequestParam("pmAmount") @DefaultValue(value = "0") int pmAmount,
-			@RequestParam("middleAmount") @DefaultValue(value = "0") int middleAmount,
-			@RequestParam("position") @DefaultValue(value = "") String position,
-			@RequestParam("surface") @DefaultValue(value = "") String surface,
-			@RequestParam("volume") @DefaultValue(value = "") String volume,
-			@RequestParam("area") @DefaultValue(value = "") String area) {
+			@RequestBody final MultiValueMap<String, String> form) {
 		ResponseEntity<Object> response = null;
 		try {
 			Record record = new Record();
-			record.set_id(id);
-			record.setAmAmount(amAmount);
-			record.setAmount(amount);
-			record.setArea(area);
-			record.setCompany(company);
-			record.setItem(item);
-			record.setSubItem(subItem);
-			record.setMiddleAmount(middleAmount);
-			record.setPersonType(personType);
-			record.setPosition(position);
-			record.setPmAmount(pmAmount);
-			record.setSurface(surface);
-			record.setType(type);
-			record.setVolume(volume);
+			record.set_id(form.getFirst("id"));
+			record.setAmAmount(Integer.parseInt(form.getFirst("amAmount")));
+			record.setAmount(Double.parseDouble(form.getFirst("amount")));
+			record.setArea(form.getFirst("area"));
+			record.setCompany(form.getFirst("company"));
+			record.setItem(form.getFirst("item"));
+			record.setSubItem(form.getFirst("subItem"));
+			record.setMiddleAmount(Integer.parseInt(form
+					.getFirst("middleAmount")));
+			record.setPersonType(form.getFirst("personType"));
+			record.setPosition(form.getFirst("position"));
+			record.setPmAmount(Integer.parseInt(form.getFirst("pmAmount")));
+			record.setSurface(form.getFirst("surface"));
+			record.setType(form.getFirst("type"));
+			record.setVolume(form.getFirst("volume"));
 			record.setUpdateDate(new Date());
 			record.setUpdateUser("ZZZZ");
 			recordService.updateRecord(record);
@@ -193,6 +202,7 @@ public class RecordRest {
 	 * @param id
 	 * @return
 	 */
+	@SuppressWarnings("finally")
 	@RequestMapping(value = "/delete", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<Object> deleteRecord(
@@ -205,6 +215,54 @@ public class RecordRest {
 		} catch (Exception e) {
 			log.error("update error", e);
 			response = new ResponseEntity<Object>("delete failure~~",
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		} finally {
+			return response;
+		}
+	}
+
+	/**
+	 * 
+	 * testing
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("finally")
+	@RequestMapping(value = "/test", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<Object> test() {
+		ResponseEntity<Object> response = null;
+		try {
+			weatherService.getWeatherStatus();
+			response = new ResponseEntity<Object>("testing success",
+					HttpStatus.OK);
+		} catch (Exception e) {
+			log.error("testing error", e);
+			response = new ResponseEntity<Object>("testing failure~~",
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		} finally {
+			return response;
+		}
+	}
+
+	/**
+	 * 
+	 * testing
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("finally")
+	@RequestMapping(value = "/test/form", method = RequestMethod.POST, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<Object> testForm(
+			@RequestBody final MultiValueMap<String, String> form) {
+		ResponseEntity<Object> response = null;
+		try {
+			String f = form.getFirst("name");
+			log.info("~~~>>" + f);
+		} catch (Exception e) {
+			log.error("testing form error", e);
+			response = new ResponseEntity<Object>("testing failure~~",
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		} finally {
 			return response;

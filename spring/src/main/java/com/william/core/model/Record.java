@@ -47,6 +47,8 @@ public class Record {
 	private String updateUser;
 
 	private String inputDate;
+	
+	private int level;
 
 	public String get_id() {
 		return _id;
@@ -224,4 +226,12 @@ public class Record {
 		this.updateUser = updateUser;
 	}
 
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+   
 }

@@ -50,6 +50,14 @@ public class RecordServiceImpl implements RecordService {
 	public List<Record> readRecord(Record record) {
 		return recordDao.readRecord(record);
 	}
+	
+	/**
+	 * search today all record
+	 */
+	@Override
+	public List<Record> readTodayAllRecord() {
+		return recordDao.readTodayAllRecord();
+	}
 
 	/**
 	 * update record

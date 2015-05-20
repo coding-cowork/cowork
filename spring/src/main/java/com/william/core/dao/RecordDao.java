@@ -14,6 +14,8 @@ public interface RecordDao {
 	public boolean createRecord(Record record);
 
 	public List<Record> readRecord(Record record);
+	
+	public List<Record> readTodayAllRecord();
 
 	public boolean updateRecord(Record record);
 

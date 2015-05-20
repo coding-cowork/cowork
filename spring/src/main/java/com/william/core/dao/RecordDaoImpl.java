@@ -2,6 +2,7 @@ package com.william.core.dao;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -80,9 +81,54 @@ public class RecordDaoImpl implements RecordDao {
 			query.put("company", record.getCompany());
 			query.put("position", record.getPosition());
 			query.append("create_date", new BasicDBObject("$gte", new Date(
-					record.getStartDate())));
-			query.append("create_date", new BasicDBObject("$ne", new Date(
-					record.getEndDate())));
+					record.getStartDate())).append("$lte",
+					new Date(record.getEndDate())));
+			DBCursor cursor = coll.find(query);
+			while (cursor.hasNext()) {
+				DBObject obj = cursor.next();
+				Record records = new Record();
+				records.setType((String) obj.get("type"));
+				records.set_id((String) obj.get(("_id")));
+				records.setAmount((double) obj.get("amount"));
+				records.setAmAmount((int) obj.get("am_amount"));
+				records.setPmAmount((int) obj.get("pm_amount"));
+				records.setMiddleAmount((int) obj.get("middle_amount"));
+				records.setArea((String) obj.get("area"));
+				records.setVolume((String) obj.get("volume"));
+				records.setPosition((String) obj.get("position"));
+				records.setSurface((String) obj.get("surface"));
+				records.setCompany((String) obj.get("company"));
+				records.setItem((String) obj.get("item"));
+				records.setSubItem((String) obj.get("sub_item"));
+				records.setCreateUser((String) obj.get("create_user"));
+				records.setCreateId((String) obj.get("create_id"));
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+				records.setInputDate(sdf.format((Date) obj.get("create_date")));
+				resultList.add(records);
+			}
+		} catch (Exception e) {
+			log.error("dao find", e);
+			throw e;
+		}
+		return resultList;
+	}
+
+	/**
+	 * search today all record
+	 */
+	@SuppressWarnings("deprecation")
+	@Override
+	public List<Record> readTodayAllRecord() {
+		List<Record> resultList = new ArrayList<Record>();
+		try {
+			DBCollection coll = mongo.getDB().getCollection("records");
+			BasicDBObject query = new BasicDBObject();
+			Date today = new Date();
+			query.append("create_date", new BasicDBObject("$gte",
+					new Date(today.getYear(), today.getMonth(),
+							today.getDate(), 0, 0, 0)).append("$lte", new Date(
+					today.getYear(), today.getMonth(), today.getDate(), 23, 59,
+					59)));
 			DBCursor cursor = coll.find(query);
 			while (cursor.hasNext()) {
 				DBObject obj = cursor.next();
@@ -140,6 +186,7 @@ public class RecordDaoImpl implements RecordDao {
 	/**
 	 * delete record
 	 */
+	@SuppressWarnings("finally")
 	@Override
 	public boolean deleteRecord(String id) {
 		boolean flag = false;
