@@ -1,5 +1,8 @@
 package com.william.core.model;
 
+/**
+ * @author William
+ */
 import java.util.Date;
 
 public class Record {
@@ -47,7 +50,7 @@ public class Record {
 	private String updateUser;
 
 	private String inputDate;
-	
+
 	private int level;
 
 	public String get_id() {
@@ -233,5 +236,5 @@ public class Record {
 	public void setLevel(int level) {
 		this.level = level;
 	}
-   
+
 }

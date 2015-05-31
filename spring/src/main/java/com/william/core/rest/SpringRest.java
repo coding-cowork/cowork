@@ -35,10 +35,16 @@ import com.william.core.component.ReportComponent;
 import com.william.core.component.ReportPath;
 import com.william.core.model.Material;
 
+/**
+ * 
+ * @author William
+ *
+ */
 @Controller
 @RequestMapping("/rest")
 public class SpringRest {
 
+	@SuppressWarnings("unused")
 	private Logger log = LoggerFactory.getLogger(SpringRest.class);
 
 	@Autowired
@@ -114,6 +120,7 @@ public class SpringRest {
 	 * @param material
 	 * @return
 	 */
+	@SuppressWarnings("finally")
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<Object> delete(@PathVariable String id) {

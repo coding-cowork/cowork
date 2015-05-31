@@ -1,5 +1,7 @@
 package com.william.core.dao;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,11 +40,18 @@ public class RecordDaoImpl implements RecordDao {
 	private static final int CREATE = 1;
 	private static final int UPDATE = 2;
 
+	private URLDecoder decoder;
+
 	@Autowired
 	private MongoConnection mongo;
 
 	@Autowired
 	private ReportComponent report;
+
+	public RecordDaoImpl() {
+		super();
+		decoder = new URLDecoder();
+	}
 
 	/**
 	 * create record
@@ -211,8 +220,10 @@ public class RecordDaoImpl implements RecordDao {
 	 * @param record
 	 * @param obj
 	 * @return
+	 * @throws UnsupportedEncodingException
 	 */
-	private DBObject setValue(Record record, DBObject obj, int type) {
+	private DBObject setValue(Record record, DBObject obj, int type)
+			throws UnsupportedEncodingException {
 
 		if (!StringUtils.isBlank(record.get_id())) {
 			obj.put("_id", record.get_id());
@@ -221,19 +232,20 @@ public class RecordDaoImpl implements RecordDao {
 		}
 
 		if (!StringUtils.isBlank(record.getCompany())) {
-			obj.put("company", record.getCompany());
+			obj.put("company", decoder.decode(record.getCompany(), "UTF-8"));
 		}
 
 		if (!StringUtils.isBlank(record.getItem())) {
-			obj.put("item", record.getItem());
+			obj.put("item", decoder.decode(record.getItem(), "UTF-8"));
 		}
 
 		if (!StringUtils.isBlank(record.getPersonType())) {
-			obj.put("person_type", record.getPersonType());
+			obj.put("person_type",
+					decoder.decode(record.getPersonType(), "UTF-8"));
 		}
 
 		if (!StringUtils.isBlank(record.getSubItem())) {
-			obj.put("sub_item", record.getSubItem());
+			obj.put("sub_item", decoder.decode(record.getSubItem(), "UTF-8"));
 		}
 
 		obj.put("amount", record.getAmount());
@@ -253,23 +265,23 @@ public class RecordDaoImpl implements RecordDao {
 		}
 
 		if (!StringUtils.isBlank(record.getType())) {
-			obj.put("type", record.getType());
+			obj.put("type", decoder.decode(record.getType(), "UTF-8"));
 		}
 
 		if (!StringUtils.isBlank(record.getArea())) {
-			obj.put("area", record.getArea());
+			obj.put("area", decoder.decode(record.getArea(), "UTF-8"));
 		}
 
 		if (!StringUtils.isBlank(record.getPosition())) {
-			obj.put("position", record.getPosition());
+			obj.put("position", decoder.decode(record.getPosition(), "UTF-8"));
 		}
 
 		if (!StringUtils.isBlank(record.getVolume())) {
-			obj.put("volume", record.getVolume());
+			obj.put("volume", decoder.decode(record.getVolume(), "UTF-8"));
 		}
 
 		if (!StringUtils.isBlank(record.getSurface())) {
-			obj.put("surface", record.getSurface());
+			obj.put("surface", decoder.decode(record.getSurface(), "UTF-8"));
 		}
 
 		return obj;

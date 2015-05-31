@@ -1,6 +1,5 @@
 package com.william.core.rest;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -11,14 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.william.core.model.Record;
 import com.william.core.service.RecordService;
@@ -29,7 +28,7 @@ import com.william.core.service.WeatherService;
  * @author William
  *
  */
-@Controller
+@RestController
 @RequestMapping("/record")
 public class RecordRest {
 
@@ -48,29 +47,15 @@ public class RecordRest {
 	 * @param record
 	 * @return
 	 */
-	@SuppressWarnings("finally")
+	@SuppressWarnings({ "finally", "deprecation" })
 	@RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<Object> createRecord(
-			@RequestBody final MultiValueMap<String, String> form) {
+	public ResponseEntity<Object> createRecord(@ModelAttribute Record record) {
 		ResponseEntity<Object> response = null;
 		try {
-			Record record = new Record();
-			record.setAmAmount(Integer.parseInt(form.getFirst("amAmount")));
-			record.setAmount(Double.parseDouble(form.getFirst("amount")));
-			record.setArea(form.getFirst("area"));
-			record.setCompany(form.getFirst("company"));
-			record.setItem(form.getFirst("item"));
-			record.setSubItem(form.getFirst("subItem"));
-			record.setMiddleAmount(Integer.parseInt(form
-					.getFirst("middleAmount")));
-			record.setPersonType(form.getFirst("personType"));
-			record.setPosition(form.getFirst("position"));
-			record.setPmAmount(Integer.parseInt(form.getFirst("pmAmount")));
-			record.setSurface(form.getFirst("surface"));
-			record.setType(form.getFirst("type"));
-			record.setVolume(form.getFirst("volume"));
-			record.setCreateDate(new Date());
+			Date today = new Date();
+			record.setCreateDate(new Date(today.getYear(), today.getMonth(),
+					today.getDate(), 23, 0, 0));
 			record.setCreateId("101");
 			record.setCreateUser("XXXXX");
 			record.setLevel(1);
@@ -161,26 +146,9 @@ public class RecordRest {
 	@SuppressWarnings("finally")
 	@RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<Object> updateRecord(
-			@RequestBody final MultiValueMap<String, String> form) {
+	public ResponseEntity<Object> updateRecord(@ModelAttribute Record record) {
 		ResponseEntity<Object> response = null;
 		try {
-			Record record = new Record();
-			record.set_id(form.getFirst("id"));
-			record.setAmAmount(Integer.parseInt(form.getFirst("amAmount")));
-			record.setAmount(Double.parseDouble(form.getFirst("amount")));
-			record.setArea(form.getFirst("area"));
-			record.setCompany(form.getFirst("company"));
-			record.setItem(form.getFirst("item"));
-			record.setSubItem(form.getFirst("subItem"));
-			record.setMiddleAmount(Integer.parseInt(form
-					.getFirst("middleAmount")));
-			record.setPersonType(form.getFirst("personType"));
-			record.setPosition(form.getFirst("position"));
-			record.setPmAmount(Integer.parseInt(form.getFirst("pmAmount")));
-			record.setSurface(form.getFirst("surface"));
-			record.setType(form.getFirst("type"));
-			record.setVolume(form.getFirst("volume"));
 			record.setUpdateDate(new Date());
 			record.setUpdateUser("ZZZZ");
 			recordService.updateRecord(record);
@@ -260,6 +228,8 @@ public class RecordRest {
 		try {
 			String f = form.getFirst("name");
 			log.info("~~~>>" + f);
+			String ff = form.get("list").get(1);
+			log.info("~~~>>" + ff);
 		} catch (Exception e) {
 			log.error("testing form error", e);
 			response = new ResponseEntity<Object>("testing failure~~",
